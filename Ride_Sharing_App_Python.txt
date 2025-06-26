@@ -1,0 +1,116 @@
+class Driver:
+
+    def __init__(self, name, vehicle, rating=5.0):
+        self.name = name
+        self.vehicle = vehicle
+        self.__rating = rating
+        self.trips = 0
+        self.is_available = True
+
+    def get_rating(self):
+        return self.__rating
+
+    def set_rating(self, rating):
+        if rating < 0 or rating > 5:
+            print("Invalid Rating")
+            return
+        self.__rating = rating
+
+    def __repr__(self): # how driver is printed
+        return f"Driver: {self.name}, Vehicle: {self.vehicle}, Rating: {self.__rating}, Available: {self.is_available}"
+
+    def toggle_availability(self):
+        self.is_available = not self.is_available
+
+class Rider:
+
+    def __init__(self, name, location):
+        self.name = name
+        self.location = location
+        self.trips = 0
+
+    def __repr__(self):
+        return f"Rider: {self.name}, Location: {self.location}"
+
+    def request_ride(self, destination):
+        self.destination = destination
+        print(f"{self.name} has requested a ride from {self.location} to {self.destination}.")
+
+class RideSharingApp:
+    def __init__(self):
+        # this is database
+        self.drivers = [] # store all drives
+        self.riders = [] # store all passengers
+        self.trips = []  # stores all trip history
+
+
+    def add_driver(self, driver):
+        # driver : object of class Driver
+        self.drivers.append(driver)
+        print(f"Driver {driver.name} added successfully.")
+
+
+    def add_rider(self, rider):
+        # rider : object of class Rider
+        self.riders.append(rider)
+        print(f"Rider {rider.name} added successfully.")
+
+
+    def find_available_driver(self):
+        for d in self.drivers:
+            if d.is_available:
+                return d
+        return None
+
+    # Book a ride for user to a certain destination.
+    def book_ride(self, rider, destination):
+        """
+        rider : object of Rider
+        destination : str,
+        """
+        if rider is None:
+            return
+
+        # User requests for a ride
+        rider.request_ride(destination)
+
+        # Find an available driver..
+        driver = self.find_available_driver()
+        if driver:
+            # sucessfuly assigned driver
+            driver.toggle_availability() # make the driver busy.
+            print(f"Ride Booked! {driver.name} will driver {rider.name} to {rider.destination}")
+        else:
+            print("No drivers available at the moment.")
+
+
+    def complete_ride(self, driver):
+
+        if driver and not driver.is_available:
+
+            driver.toggle_availability() # make driver available.
+            print(f"Ride completed! {driver.name} is now available.")
+
+        else:
+            print("Driver not found or driver already available.")
+
+
+app = RideSharingApp()
+
+print("Adding Drivers:")
+driver1 = Driver("Alice", "Swift")
+driver2 = Driver("Bob", "Honda City")
+app.add_driver(driver1)
+app.add_driver(driver2)
+
+print("\nAdding Riders:")
+rider1 = Rider("Mohit", "Coffee Shop")
+rider2 = Rider("Emma", "Airport")
+rider3 = Rider("John", "Downtown")
+app.add_rider(rider1)
+app.add_rider(rider2)
+app.add_rider(rider3)
+
+
+print("\nBooking Ride:")
+app.book_ride(rider2, "City Mall")
